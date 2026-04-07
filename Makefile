@@ -1,24 +1,27 @@
 rust-version:
 	@echo "Rust command-line utility versions:"
-	rustc --version 			#rust compiler
-	cargo --version 			#rust package manager
-	rustfmt --version			#rust code formatter
-	rustup --version			#rust toolchain manager
-	clippy-driver --version		#rust linter
+	rustc --version
+	cargo --version
+	rustfmt --version
+	rustup --version
+	clippy-driver --version
 
 format:
-	cargo fmt --quiet
+	cargo fmt
+
+check-format:
+	cargo fmt --all -- --check
 
 lint:
-	cargo clippy --quiet
+	cargo clippy --all-targets --all-features -- -D warnings
 
 test:
-	cargo test
+	cargo test --workspace --all-targets --all-features --locked
 
 run:
 	cargo run
 
 release:
-	cargo build --release
+	cargo build --release --locked
 
-all: format lint test run
+ci: check-format lint test release

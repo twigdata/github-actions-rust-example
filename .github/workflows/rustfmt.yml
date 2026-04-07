@@ -1,18 +1,22 @@
 name: Rustfmt
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          components: clippy, rustfmt
-          override: true
-      - name: Run rustfmt
-        run: make format
+  rustfmt:
+    uses: ./.github/workflows/_rust-ci.yml
+    with:
+      job_name: Check formatting
+      step_name: Check formatting
+      components: rustfmt
+      command: cargo fmt --all -- --check

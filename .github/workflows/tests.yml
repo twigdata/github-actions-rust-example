@@ -1,19 +1,21 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          components: clippy, rustfmt
-          override: true
-      - name: Run clippy
-        run: make test
-  
+  tests:
+    uses: ./.github/workflows/_rust-ci.yml
+    with:
+      job_name: Run tests
+      step_name: Run tests
+      command: cargo test --workspace --all-targets --all-features --locked

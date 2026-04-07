@@ -1,0 +1,64 @@
+name: Rust reusable job
+
+on:
+  workflow_call:
+    inputs:
+      job_name:
+        required: true
+        type: string
+      step_name:
+        required: true
+        type: string
+      command:
+        required: true
+        type: string
+      toolchain:
+        required: false
+        type: string
+        default: stable
+      components:
+        required: false
+        type: string
+        default: ""
+      runs_on:
+        required: false
+        type: string
+        default: ubuntu-latest
+      timeout_minutes:
+        required: false
+        type: number
+        default: 20
+
+permissions:
+  contents: read
+
+jobs:
+  rust-job:
+    name: ${{ inputs.job_name }}
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+
+    env:
+      CARGO_TERM_COLOR: always
+      RUST_BACKTRACE: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Rust toolchain
+        if: ${{ inputs.components == '' }}
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ inputs.toolchain }}
+
+      - name: Setup Rust toolchain with components
+        if: ${{ inputs.components != '' }}
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ inputs.toolchain }}
+          components: ${{ inputs.components }}
+
+      - name: ${{ inputs.step_name }}
+        shell: bash
+        run: ${{ inputs.command }}

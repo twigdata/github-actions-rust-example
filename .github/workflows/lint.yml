@@ -1,20 +1,22 @@
 name: Clippy
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          components: clippy, rustfmt
-          override: true
-      - name: Run clippy
-        run: make lint
-  
-
+  clippy:
+    uses: ./.github/workflows/_rust-ci.yml
+    with:
+      job_name: Run clippy
+      step_name: Run clippy
+      components: clippy
+      command: cargo clippy --workspace --all-targets --all-features -- -D warnings
