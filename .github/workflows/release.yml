@@ -18,4 +18,4 @@ jobs:
     with:
       job_name: Build release
       step_name: Build release
-      command: cargo build --release --locked
+      command: cargo build --release
